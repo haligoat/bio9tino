@@ -89,6 +89,81 @@ body {
   border-top: 1px solid var(--border-color);
 }
 
+.auth-panel {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.user-row {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.user-avatar {
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+}
+
+.status-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, 1fr);
+  margin-bottom: 1rem;
+}
+
+.status-grid > div {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.status-value,
+.status-label {
+  display: block;
+}
+
+.status-value {
+  color: var(--text-main);
+  font-size: 1.25rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.status-label,
+.login-hint {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.sign-out-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 800;
+  padding: 0.625rem 0.875rem;
+  width: 100%;
+}
+
+.sign-out-btn:hover {
+  border-color: var(--border-strong);
+  box-shadow: inset 3px 0 0 var(--secondary-color);
+}
+
+.google-login {
+  margin-top: 0.75rem;
+  min-height: 40px;
+}
+
 .current-label {
   color: var(--text-muted);
   font-size: 0.75rem;

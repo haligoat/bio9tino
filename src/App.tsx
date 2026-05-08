@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { BookOpen, ClipboardList, Home, FileText } from 'lucide-react';
 import VocabView from './components/VocabView';
@@ -6,13 +6,183 @@ import QuizView from './components/QuizView';
 import type { StudyData } from './types';
 import './App.css';
 
+interface GoogleCredentialResponse {
+  credential: string;
+  select_by: string;
+}
+
+interface GoogleUser {
+  sub: string;
+  name: string;
+  email: string;
+  picture?: string;
+}
+
+interface UserStatus {
+  lastMaterialTitle?: string;
+  quizAttempts: number;
+  bestScore: number;
+  lastScore?: number;
+  lastStudiedAt?: string;
+}
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: {
+            client_id: string;
+            callback: (response: GoogleCredentialResponse) => void;
+          }) => void;
+          renderButton: (
+            parent: HTMLElement,
+            options: {
+              theme: 'outline' | 'filled_blue' | 'filled_black';
+              size: 'large' | 'medium' | 'small';
+              type: 'standard' | 'icon';
+              text: 'signin_with' | 'signup_with' | 'continue_with' | 'signin';
+              shape: 'rectangular' | 'pill' | 'circle' | 'square';
+            }
+          ) => void;
+          disableAutoSelect: () => void;
+        };
+      };
+    };
+  }
+}
+
+const defaultStatus: UserStatus = {
+  quizAttempts: 0,
+  bestScore: 0,
+};
+
+const userStorageKey = 'bio9-google-user';
+const statusStorageKey = (userId: string) => `bio9-status-${userId}`;
+
+const getSavedUser = () => {
+  const savedUser = localStorage.getItem(userStorageKey);
+  return savedUser ? JSON.parse(savedUser) as GoogleUser : null;
+};
+
+const getSavedStatus = (userId: string) => {
+  const savedStatus = localStorage.getItem(statusStorageKey(userId));
+  return savedStatus ? JSON.parse(savedStatus) as UserStatus : defaultStatus;
+};
+
+const decodeJwtPayload = <T,>(credential: string): T => {
+  const payload = credential.split('.')[1];
+  const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+  const paddedPayload = normalizedPayload.padEnd(Math.ceil(normalizedPayload.length / 4) * 4, '=');
+  return JSON.parse(window.atob(paddedPayload)) as T;
+};
+
 function App() {
   const location = useLocation();
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
   const [availableMaterials, setAvailableMaterials] = useState<string[]>([]);
   const [currentMaterial, setCurrentMaterial] = useState<StudyData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<GoogleUser | null>(() => getSavedUser());
+  const [userStatus, setUserStatus] = useState<UserStatus>(() => {
+    const savedUser = getSavedUser();
+    return savedUser ? getSavedStatus(savedUser.sub) : defaultStatus;
+  });
 
   const [allMaterials, setAllMaterials] = useState<StudyData | null>(null);
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+
+  const saveUserStatus = (updates: Partial<UserStatus>) => {
+    if (!currentUser) return;
+
+    setUserStatus((previousStatus) => {
+      const nextStatus = {
+        ...previousStatus,
+        ...updates,
+        lastStudiedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(statusStorageKey(currentUser.sub), JSON.stringify(nextStatus));
+      return nextStatus;
+    });
+  };
+
+  const handleGoogleCredential = useCallback((response: GoogleCredentialResponse) => {
+    const profile = decodeJwtPayload<GoogleUser>(response.credential);
+    const user = {
+      sub: profile.sub,
+      name: profile.name,
+      email: profile.email,
+      picture: profile.picture,
+    };
+
+    setCurrentUser(user);
+    localStorage.setItem(userStorageKey, JSON.stringify(user));
+    const savedStatus = {
+      ...getSavedStatus(user.sub),
+      ...(currentMaterial ? { lastMaterialTitle: currentMaterial.title } : {}),
+    };
+    setUserStatus(savedStatus);
+    localStorage.setItem(statusStorageKey(user.sub), JSON.stringify(savedStatus));
+  }, [currentMaterial]);
+
+  const handleSignOut = () => {
+    window.google?.accounts.id.disableAutoSelect();
+    localStorage.removeItem(userStorageKey);
+    setCurrentUser(null);
+    setUserStatus(defaultStatus);
+  };
+
+  const handleQuizComplete = (score: number, total: number) => {
+    saveUserStatus({
+      quizAttempts: userStatus.quizAttempts + 1,
+      bestScore: Math.max(userStatus.bestScore, score),
+      lastScore: total === 0 ? 0 : Math.round((score / total) * 100),
+    });
+  };
+
+  useEffect(() => {
+    if (!googleClientId || currentUser || loading) return;
+
+    const buttonContainer = googleButtonRef.current;
+    let cancelled = false;
+
+    const renderGoogleButton = () => {
+      if (cancelled || !buttonContainer || !window.google) return;
+
+      buttonContainer.innerHTML = '';
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleGoogleCredential,
+      });
+      window.google.accounts.id.renderButton(buttonContainer, {
+        theme: 'outline',
+        size: 'large',
+        type: 'standard',
+        text: 'signin_with',
+        shape: 'rectangular',
+      });
+    };
+
+    if (window.google) {
+      renderGoogleButton();
+    } else {
+      const timer = window.setInterval(() => {
+        if (window.google) {
+          window.clearInterval(timer);
+          renderGoogleButton();
+        }
+      }, 100);
+
+      return () => {
+        cancelled = true;
+        window.clearInterval(timer);
+      };
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [googleClientId, currentUser, handleGoogleCredential, loading]);
 
   // In a real static site, we'd fetch an index.json or use Vite's glob import
   useEffect(() => {
@@ -41,9 +211,7 @@ function App() {
           setAllMaterials(aggregated);
           
           // Load the first one by default if none selected
-          if (!currentMaterial) {
-            setCurrentMaterial(loadedData[0]);
-          }
+          setCurrentMaterial((previousMaterial) => previousMaterial ?? loadedData[0]);
         }
       } catch (err) {
         console.error("Failed to load materials:", err);
@@ -58,6 +226,7 @@ function App() {
   const selectMaterial = async (name: string) => {
     if (name === 'All Materials') {
       setCurrentMaterial(allMaterials);
+      if (allMaterials) saveUserStatus({ lastMaterialTitle: allMaterials.title });
       return;
     }
     const modules = import.meta.glob('./data/*.json');
@@ -65,10 +234,11 @@ function App() {
     if (key) {
       const module = await modules[key]() as { default: StudyData };
       setCurrentMaterial(module.default);
+      saveUserStatus({ lastMaterialTitle: module.default.title });
     }
   };
 
-  const HomePage = () => (
+  const renderHomePage = () => (
     <div className="page-content">
       <div className="hero-section">
         <h1>CHS BIO 9 STUDY</h1>
@@ -150,6 +320,39 @@ function App() {
         
         {currentMaterial && (
           <div className="sidebar-footer">
+            <div className="auth-panel">
+              {currentUser ? (
+                <>
+                  <div className="user-row">
+                    {currentUser.picture && <img src={currentUser.picture} alt="" className="user-avatar" />}
+                    <div>
+                      <div className="current-label">Signed in</div>
+                      <div className="current-title">{currentUser.name}</div>
+                    </div>
+                  </div>
+                  <div className="status-grid">
+                    <div>
+                      <span className="status-value">{userStatus.quizAttempts}</span>
+                      <span className="status-label">Quizzes</span>
+                    </div>
+                    <div>
+                      <span className="status-value">{userStatus.bestScore}</span>
+                      <span className="status-label">Best</span>
+                    </div>
+                  </div>
+                  <button className="sign-out-btn" onClick={handleSignOut}>Sign out</button>
+                </>
+              ) : (
+                <>
+                  <div className="current-label">Save Status</div>
+                  {googleClientId ? (
+                    <div className="google-login" ref={googleButtonRef}></div>
+                  ) : (
+                    <p className="login-hint">Add VITE_GOOGLE_CLIENT_ID to enable Google login.</p>
+                  )}
+                </>
+              )}
+            </div>
             <div className="current-label">Studying:</div>
             <div className="current-title">{currentMaterial.title}</div>
           </div>
@@ -158,12 +361,12 @@ function App() {
 
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={renderHomePage()} />
           <Route path="/vocab" element={
-            currentMaterial ? <VocabView items={currentMaterial.vocab} /> : <HomePage />
+            currentMaterial ? <VocabView items={currentMaterial.vocab} /> : renderHomePage()
           } />
           <Route path="/quizzes" element={
-            currentMaterial ? <QuizView items={currentMaterial.quizzes} /> : <HomePage />
+            currentMaterial ? <QuizView items={currentMaterial.quizzes} onQuizComplete={handleQuizComplete} /> : renderHomePage()
           } />
         </Routes>
       </main>

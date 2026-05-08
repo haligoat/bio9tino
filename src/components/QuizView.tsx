@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { CheckCircle2, XCircle, ChevronRight, RefreshCw } from 'lucide-react';
+import { CheckCircle2, XCircle, ChevronRight, RefreshCw, SkipForward } from 'lucide-react';
 import type { QuizItem } from '../types';
 import './QuizView.css';
 
 interface QuizViewProps {
   items: QuizItem[];
+  onQuizComplete?: (score: number, total: number) => void;
 }
 
-const QuizView: React.FC<QuizViewProps> = ({ items }) => {
+const QuizView: React.FC<QuizViewProps> = ({ items, onQuizComplete }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [shortAnswer, setShortAnswer] = useState('');
@@ -23,19 +24,33 @@ const QuizView: React.FC<QuizViewProps> = ({ items }) => {
       setShortAnswer('');
       setShowResult(false);
     } else {
+      onQuizComplete?.(score, items.length);
+      setQuizComplete(true);
+    }
+  };
+
+  const handleSkip = () => {
+    const currentItem = items[currentIndex];
+
+    setAnswers([...answers, {
+      question: currentItem.question,
+      correct: false,
+      userIcon: ''
+    }]);
+
+    if (currentIndex < items.length - 1) {
+      handleNext();
+    } else {
+      onQuizComplete?.(score, items.length);
       setQuizComplete(true);
     }
   };
 
   const handleSubmit = () => {
     const currentItem = items[currentIndex];
-    let isCorrect = false;
-
-    if (currentItem.type === 'multiple-choice') {
-      isCorrect = selectedOption === currentItem.answer;
-    } else {
-      isCorrect = shortAnswer.trim().toLowerCase() === currentItem.answer.toLowerCase();
-    }
+    const isCorrect = currentItem.type === 'multiple-choice'
+      ? selectedOption === currentItem.answer
+      : shortAnswer.trim().toLowerCase() === currentItem.answer.toLowerCase();
 
     if (isCorrect) setScore(score + 1);
     
@@ -143,13 +158,18 @@ const QuizView: React.FC<QuizViewProps> = ({ items }) => {
 
           <div className="quiz-footer">
             {!showResult ? (
-              <button 
-                className="submit-btn" 
-                onClick={handleSubmit}
-                disabled={currentItem.type === 'multiple-choice' ? !selectedOption : !shortAnswer.trim()}
-              >
-                Submit Answer
-              </button>
+              <>
+                <button className="skip-btn" onClick={handleSkip}>
+                  Skip <SkipForward size={20} />
+                </button>
+                <button
+                  className="submit-btn"
+                  onClick={handleSubmit}
+                  disabled={currentItem.type === 'multiple-choice' ? !selectedOption : !shortAnswer.trim()}
+                >
+                  Submit Answer
+                </button>
+              </>
             ) : (
               <button className="next-btn" onClick={handleNext}>
                 {currentIndex === items.length - 1 ? 'Finish Quiz' : 'Next Question'} <ChevronRight size={20} />

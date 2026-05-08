@@ -1,14 +1,24 @@
+.vocab-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
 .vocab-card {
-  background: var(--card-bg);
-  padding: 2rem;
-  border-radius: 1rem;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.09), transparent 48%),
+    var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
   border: 1px solid var(--border-color);
   transition: all 0.2s;
+  box-shadow: var(--shadow);
 }
 
 .vocab-card:hover {
-  border-color: #ffffff;
+  border-color: var(--border-strong);
   transform: translateY(-2px);
+  box-shadow: var(--glow-cyan), var(--glow-pink);
 }
 
 .vocab-term {
@@ -16,6 +26,7 @@
   font-size: 1.25rem;
   color: var(--primary-color);
   margin-bottom: 0.75rem;
+  text-shadow: 0 0 16px rgba(34, 211, 238, 0.35);
 }
 
 .vocab-definition {

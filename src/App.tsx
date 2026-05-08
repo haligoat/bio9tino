@@ -143,13 +143,13 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/vocab" element={
-            currentMaterial ? <VocabView items={currentMaterial.vocab} title={currentMaterial.title} /> : <HomePage />
+            currentMaterial ? <VocabView items={currentMaterial.vocab} /> : <HomePage />
           } />
           <Route path="/flashcards" element={
-            currentMaterial ? <FlashcardView items={currentMaterial.flashcards} title={currentMaterial.title} /> : <HomePage />
+            currentMaterial ? <FlashcardView items={currentMaterial.flashcards} /> : <HomePage />
           } />
           <Route path="/quizzes" element={
-            currentMaterial ? <QuizView items={currentMaterial.quizzes} title={currentMaterial.title} /> : <HomePage />
+            currentMaterial ? <QuizView items={currentMaterial.quizzes} /> : <HomePage />
           } />
         </Routes>
       </main>

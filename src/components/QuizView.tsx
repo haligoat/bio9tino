@@ -5,10 +5,9 @@ import './QuizView.css';
 
 interface QuizViewProps {
   items: QuizItem[];
-  title: string;
 }
 
-const QuizView: React.FC<QuizViewProps> = ({ items, title }) => {
+const QuizView: React.FC<QuizViewProps> = ({ items }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [shortAnswer, setShortAnswer] = useState('');

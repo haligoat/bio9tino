@@ -4,10 +4,9 @@ import './VocabView.css';
 
 interface VocabViewProps {
   items: VocabItem[];
-  title: string;
 }
 
-const VocabView: React.FC<VocabViewProps> = ({ items, title }) => {
+const VocabView: React.FC<VocabViewProps> = ({ items }) => {
   return (
     <div className="vocab-view">
       <header className="view-header">

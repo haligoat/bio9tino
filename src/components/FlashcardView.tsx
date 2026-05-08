@@ -5,10 +5,9 @@ import './FlashcardView.css';
 
 interface FlashcardViewProps {
   items: FlashcardItem[];
-  title: string;
 }
 
-const FlashcardView: React.FC<FlashcardViewProps> = ({ items, title }) => {
+const FlashcardView: React.FC<FlashcardViewProps> = ({ items }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 

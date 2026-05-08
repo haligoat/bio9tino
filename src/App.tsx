@@ -19,12 +19,13 @@ function App() {
       try {
         // Vite specific way to find all json files in src/data
         const modules = import.meta.glob('./data/*.json');
-        const paths = Object.keys(modules).map(path => path.split('/').pop()?.replace('.json', '') || '');
+        const keys = Object.keys(modules);
+        const paths = keys.map(path => path.split('/').pop()?.replace('.json', '') || '');
         setAvailableMaterials(paths);
         
         // Load the first one by default if none selected
-        if (paths.length > 0 && !currentMaterial) {
-          const firstModule = await modules[`./data/${paths[0]}.json`]() as { default: StudyData };
+        if (keys.length > 0 && !currentMaterial) {
+          const firstModule = await modules[keys[0]]() as { default: StudyData };
           setCurrentMaterial(firstModule.default);
         }
       } catch (err) {
@@ -39,8 +40,11 @@ function App() {
 
   const selectMaterial = async (name: string) => {
     const modules = import.meta.glob('./data/*.json');
-    const module = await modules[`./data/${name}.json`]() as { default: StudyData };
-    setCurrentMaterial(module.default);
+    const key = Object.keys(modules).find(k => k.includes(name));
+    if (key) {
+      const module = await modules[key]() as { default: StudyData };
+      setCurrentMaterial(module.default);
+    }
   };
 
   const HomePage = () => (

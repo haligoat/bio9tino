@@ -4,12 +4,22 @@
   margin: 0 auto;
 }
 
+.quiz-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin-top: 1.25rem;
+}
+
 .progress-bar {
   width: 100%;
-  height: 6px;
+  height: 12px;
   background-color: rgba(147, 164, 188, 0.12);
   border-radius: 10px;
-  margin: 1.5rem 0;
+  margin: 0.75rem 0 0;
   overflow: hidden;
   border: 1px solid rgba(34, 211, 238, 0.16);
 }

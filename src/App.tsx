@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { BookOpen, ClipboardList, Home, FileText } from 'lucide-react';
+import { BookOpen, ClipboardList, Home, FileText, PanelsTopLeft } from 'lucide-react';
 import VocabView from './components/VocabView';
 import QuizView from './components/QuizView';
+import FlashcardsView from './components/FlashcardsView';
 import type { QuizProgress, StudyData } from './types';
 import './App.css';
 
@@ -316,6 +317,12 @@ function App() {
           <p>Challenge yourself with comprehensive 60-question quizzes.</p>
           <Link to="/quizzes" className="btn-secondary">Take Quiz</Link>
         </div>
+        <div className="feature-card">
+          <PanelsTopLeft size={32} />
+          <h3>Flashcards</h3>
+          <p>Flip through terms and definitions for quick review.</p>
+          <Link to="/flashcards" className="btn-secondary">Practice</Link>
+        </div>
       </section>
     </div>
   );
@@ -342,6 +349,11 @@ function App() {
           <li>
             <Link to="/quizzes" className={location.pathname === '/quizzes' ? 'active' : ''}>
               <ClipboardList size={20} /> <span>Quizzes</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/flashcards" className={location.pathname === '/flashcards' ? 'active' : ''}>
+              <PanelsTopLeft size={20} /> <span>Flashcards</span>
             </Link>
           </li>
         </ul>
@@ -392,6 +404,9 @@ function App() {
           <Route path="/" element={renderHomePage()} />
           <Route path="/vocab" element={
             currentMaterial ? <VocabView items={currentMaterial.vocab} /> : renderHomePage()
+          } />
+          <Route path="/flashcards" element={
+            currentMaterial ? <FlashcardsView items={currentMaterial.vocab} /> : renderHomePage()
           } />
           <Route path="/quizzes" element={
             currentMaterial ? (

@@ -179,18 +179,29 @@ const QuizView: React.FC<QuizViewProps> = ({ items, initialProgress, onProgressC
 
   const currentItem = items[currentIndex];
   const currentAnswer = answers[currentIndex];
+  const progressPercent = Math.round(((currentIndex + 1) / items.length) * 100);
 
   return (
     <div className="quiz-view">
       <header className="view-header">
         <h1>Quiz</h1>
-        <div className="progress-bar">
+        <div className="quiz-progress-meta">
+          <span>Question {currentIndex + 1} of {items.length}</span>
+          <span>{progressPercent}%</span>
+        </div>
+        <div
+          className="progress-bar"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={items.length}
+          aria-valuenow={currentIndex + 1}
+          aria-label="Quiz progress"
+        >
           <div 
             className="progress-fill" 
-            style={{ width: `${((currentIndex + 1) / items.length) * 100}%` }}
+            style={{ width: `${progressPercent}%` }}
           ></div>
         </div>
-        <p>Question {currentIndex + 1} of {items.length}</p>
       </header>
 
       <div className="quiz-container">

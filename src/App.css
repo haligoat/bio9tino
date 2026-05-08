@@ -257,6 +257,7 @@ body {
 
 .feature-card:nth-child(1) { grid-column: span 6; }
 .feature-card:nth-child(2) { grid-column: span 6; }
+.feature-card:nth-child(3) { grid-column: span 12; }
 
 .feature-card h3 {
   font-size: 1.75rem;
@@ -373,7 +374,8 @@ body {
     padding: 2rem;
   }
   .feature-card:nth-child(1),
-  .feature-card:nth-child(2) {
+  .feature-card:nth-child(2),
+  .feature-card:nth-child(3) {
     grid-column: span 12;
   }
 }

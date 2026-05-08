@@ -1,0 +1,45 @@
+{
+  "title": "React Fundamentals",
+  "vocab": [
+    { "term": "JSX", "definition": "A syntax extension for JavaScript that looks similar to HTML." },
+    { "term": "Component", "definition": "The building blocks of a React application." },
+    { "term": "Props", "definition": "Short for properties, used to pass data between components." },
+    { "term": "State", "definition": "An object that holds some information that may change over the lifetime of the component." },
+    { "term": "Hook", "definition": "A special function that lets you 'hook into' React features." }
+  ],
+  "flashcards": [
+    { "question": "What is the virtual DOM?", "answer": "A lightweight copy of the real DOM kept in memory." },
+    { "question": "What is the purpose of useEffect?", "answer": "To perform side effects in functional components." },
+    { "question": "Can components be nested?", "answer": "Yes, components can contain other components." }
+  ],
+  "quizzes": [
+    {
+      "type": "multiple-choice",
+      "question": "Which hook is used for state management?",
+      "options": ["useEffect", "useState", "useContext", "useRef"],
+      "answer": "useState"
+    },
+    {
+      "type": "multiple-choice",
+      "question": "What does JSX stand for?",
+      "options": ["JavaScript XML", "Java Syntax Extension", "JavaScript Xerox", "JSON XML"],
+      "answer": "JavaScript XML"
+    },
+    {
+      "type": "short-answer",
+      "question": "What is the name of the function used to pass data to child components?",
+      "answer": "props"
+    },
+    {
+      "type": "short-answer",
+      "question": "What command creates a new Vite project?",
+      "answer": "npm create vite"
+    },
+    {
+      "type": "multiple-choice",
+      "question": "React is maintained by which company?",
+      "options": ["Google", "Meta", "Microsoft", "Amazon"],
+      "answer": "Meta"
+    }
+  ]
+}

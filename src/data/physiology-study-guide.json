@@ -1,0 +1,61 @@
+{
+  "title": "Physiology Study Guide",
+  "vocab": [
+    { "term": "Homeostasis", "definition": "The body's effort to maintain a relatively constant internal environment. It is a range that varies; being outside can cause disease or death." },
+    { "term": "Negative Feedback", "definition": "The body reacts to oppose or eliminate a stimulus to bring the body back to the set point (e.g., blood glucose, temperature)." },
+    { "term": "Positive Feedback", "definition": "A response that enhances the body's response, moving the body further away from homeostasis (e.g., labor contractions, blood clotting)." },
+    { "term": "Anterior", "definition": "Towards the head of the pig." },
+    { "term": "Posterior", "definition": "Towards the tail of the pig." },
+    { "term": "Dorsal", "definition": "Toward the back of the pig." },
+    { "term": "Ventral", "definition": "Toward the belly of the pig." },
+    { "term": "Medial", "definition": "Toward the midline." },
+    { "term": "Lateral", "definition": "Away from the midline." },
+    { "term": "Small Intestines", "definition": "Primary site of nutrient digestion and absorption; walls are covered with villi to increase surface area." },
+    { "term": "Large Intestines (Colon)", "definition": "Site of water and nutrient absorption; removes waste from the body via the rectum and anus." },
+    { "term": "Liver", "definition": "Produces bile to aid fat digestion, filters blood, and stores glucose as glycogen." },
+    { "term": "Pancreas", "definition": "Produces digestive enzymes and buffer (bicarbonate) to neutralize stomach acid; also produces insulin and glucagon." },
+    { "term": "Kidneys", "definition": "Filter water, ions, and nitrogenous wastes from the blood to form urine." },
+    { "term": "Arteries", "definition": "Large blood vessels with thick walls that carry oxygenated blood from the heart to the body." },
+    { "term": "Capillaries", "definition": "Tiny blood vessels where materials (oxygen, nutrients, waste) are exchanged between blood and cells." },
+    { "term": "Veins", "definition": "Large blood vessels with thinner walls that carry deoxygenated blood back to the heart." },
+    { "term": "Diaphragm", "definition": "Thin skeletal muscle that separates the thoracic and abdominal cavities; contracts to inhale and relaxes to exhale." }
+  ],
+  "flashcards": [
+    { "question": "What is the primary function of the epiglottis?", "answer": "A flap at the back of the throat that folds to allow food to pass into the esophagus instead of the trachea." },
+    { "question": "What does the gallbladder do?", "answer": "Stores and delivers bile produced by the liver to the small intestine." },
+    { "question": "Which vessels drain urine from the kidney to the bladder?", "answer": "Ureters." },
+    { "question": "Where does fertilization usually occur in the female reproductive system?", "answer": "The Fallopian Tube (oviduct)." },
+    { "question": "What is the only artery that carries deoxygenated blood?", "answer": "The Pulmonary Artery (carries blood to the lungs)." },
+    { "question": "What is the function of the alveoli in the lungs?", "answer": "Thin walls allow inhaled oxygen to move into red blood cells and carbon dioxide to move out." }
+  ],
+  "quizzes": [
+    {
+      "type": "multiple-choice",
+      "question": "Which of these is an example of Positive Feedback?",
+      "options": ["Thermoregulation", "Blood glucose regulation", "Labor contractions", "pH level maintenance"],
+      "answer": "Labor contractions"
+    },
+    {
+      "type": "multiple-choice",
+      "question": "Which organ produces insulin and glucagon?",
+      "options": ["Liver", "Gallbladder", "Pancreas", "Stomach"],
+      "answer": "Pancreas"
+    },
+    {
+      "type": "short-answer",
+      "question": "Which heart chamber pumps oxygenated blood to the body via the aorta?",
+      "answer": "Left ventricle"
+    },
+    {
+      "type": "short-answer",
+      "question": "What are the tiny air sacs in the lungs where gas exchange occurs?",
+      "answer": "alveoli"
+    },
+    {
+      "type": "multiple-choice",
+      "question": "Which directional term means 'toward the back'?",
+      "options": ["Ventral", "Dorsal", "Anterior", "Posterior"],
+      "answer": "Dorsal"
+    }
+  ]
+}

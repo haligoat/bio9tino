@@ -57,6 +57,7 @@ const defaultStatus: UserStatus = {
   bestScore: 0,
 };
 
+const defaultGoogleClientId = '450297337959-kksvlman4li817h039dd9rpt8igpa29s.apps.googleusercontent.com';
 const userStorageKey = 'bio9-google-user';
 const statusStorageKey = (userId: string) => `bio9-status-${userId}`;
 
@@ -90,7 +91,7 @@ function App() {
   });
 
   const [allMaterials, setAllMaterials] = useState<StudyData | null>(null);
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+  const googleClientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) || defaultGoogleClientId;
 
   const saveUserStatus = (updates: Partial<UserStatus>) => {
     if (!currentUser) return;

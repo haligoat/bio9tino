@@ -4,7 +4,7 @@ import { BookOpen, Layers, ClipboardList, Home, FileText } from 'lucide-react';
 import VocabView from './components/VocabView';
 import FlashcardView from './components/FlashcardView';
 import QuizView from './components/QuizView';
-import { StudyData } from './types';
+import type { StudyData } from './types';
 import './App.css';
 
 function App() {

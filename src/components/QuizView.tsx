@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle2, XCircle, ChevronRight, RefreshCw } from 'lucide-react';
-import { QuizItem } from '../types';
+import type { QuizItem } from '../types';
 import './QuizView.css';
 
 interface QuizViewProps {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { VocabItem } from '../types';
+import type { VocabItem } from '../types';
 import './VocabView.css';
 
 interface VocabViewProps {

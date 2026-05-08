@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
-import { FlashcardItem } from '../types';
+import type { FlashcardItem } from '../types';
 import './FlashcardView.css';
 
 interface FlashcardViewProps {

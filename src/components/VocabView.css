@@ -1,56 +1,25 @@
-.vocab-view {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.view-header {
-  margin-bottom: 2rem;
-}
-
-.view-header h1 {
-  margin: 0;
-  font-size: 1.875rem;
-  color: var(--text-main);
-}
-
-.view-header p {
-  margin: 0.5rem 0 0;
-  color: var(--text-muted);
-}
-
-.vocab-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-
 .vocab-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: 1rem;
   border: 1px solid var(--border-color);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .vocab-card:hover {
+  border-color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
 }
 
 .vocab-term {
-  font-weight: 700;
-  font-size: 1.125rem;
+  font-weight: 800;
+  font-size: 1.25rem;
   color: var(--primary-color);
   margin-bottom: 0.75rem;
 }
 
 .vocab-definition {
   color: var(--text-main);
-  line-height: 1.5;
-  font-size: 0.9375rem;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  line-height: 1.6;
+  font-size: 1rem;
 }

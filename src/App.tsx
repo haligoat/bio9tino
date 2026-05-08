@@ -3,7 +3,7 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { BookOpen, ClipboardList, Home, FileText } from 'lucide-react';
 import VocabView from './components/VocabView';
 import QuizView from './components/QuizView';
-import type { StudyData } from './types';
+import type { QuizProgress, StudyData } from './types';
 import './App.css';
 
 interface GoogleCredentialResponse {
@@ -60,6 +60,12 @@ const defaultStatus: UserStatus = {
 const defaultGoogleClientId = '450297337959-kksvlman4li817h039dd9rpt8igpa29s.apps.googleusercontent.com';
 const userStorageKey = 'bio9-google-user';
 const statusStorageKey = (userId: string) => `bio9-status-${userId}`;
+const quizProgressStorageKey = (userId: string, materialTitle: string) => `bio9-quiz-progress-${userId}-${materialTitle}`;
+
+const formatStudyGuideName = (name: string) =>
+  name
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 
 const getSavedUser = () => {
   const savedUser = localStorage.getItem(userStorageKey);
@@ -69,6 +75,11 @@ const getSavedUser = () => {
 const getSavedStatus = (userId: string) => {
   const savedStatus = localStorage.getItem(statusStorageKey(userId));
   return savedStatus ? JSON.parse(savedStatus) as UserStatus : defaultStatus;
+};
+
+const getSavedQuizProgress = (userId: string, materialTitle: string) => {
+  const savedProgress = localStorage.getItem(quizProgressStorageKey(userId, materialTitle));
+  return savedProgress ? JSON.parse(savedProgress) as QuizProgress : null;
 };
 
 const decodeJwtPayload = <T,>(credential: string): T => {
@@ -139,6 +150,22 @@ function App() {
       bestScore: Math.max(userStatus.bestScore, score),
       lastScore: total === 0 ? 0 : Math.round((score / total) * 100),
     });
+  };
+
+  const handleQuizProgressChange = (progress: QuizProgress | null) => {
+    if (!currentUser || !currentMaterial) return;
+
+    const storageKey = quizProgressStorageKey(currentUser.sub, currentMaterial.title);
+    if (progress) {
+      localStorage.setItem(storageKey, JSON.stringify(progress));
+    } else {
+      localStorage.removeItem(storageKey);
+    }
+  };
+
+  const getCurrentQuizProgress = () => {
+    if (!currentUser || !currentMaterial) return null;
+    return getSavedQuizProgress(currentUser.sub, currentMaterial.title);
   };
 
   useEffect(() => {
@@ -269,7 +296,7 @@ function App() {
                 onClick={() => selectMaterial(name)}
               >
                 <FileText size={24} />
-                <span>{name.replace(/-/g, ' ')}</span>
+                <span>{formatStudyGuideName(name)}</span>
               </div>
             ))}
           </div>
@@ -367,7 +394,15 @@ function App() {
             currentMaterial ? <VocabView items={currentMaterial.vocab} /> : renderHomePage()
           } />
           <Route path="/quizzes" element={
-            currentMaterial ? <QuizView items={currentMaterial.quizzes} onQuizComplete={handleQuizComplete} /> : renderHomePage()
+            currentMaterial ? (
+              <QuizView
+                key={`${currentUser?.sub ?? 'guest'}-${currentMaterial.title}`}
+                items={currentMaterial.quizzes}
+                initialProgress={getCurrentQuizProgress()}
+                onProgressChange={handleQuizProgressChange}
+                onQuizComplete={handleQuizComplete}
+              />
+            ) : renderHomePage()
           } />
         </Routes>
       </main>

@@ -1,47 +1,118 @@
 import React, { useState } from 'react';
 import { CheckCircle2, XCircle, ChevronRight, RefreshCw, SkipForward } from 'lucide-react';
-import type { QuizItem } from '../types';
+import type { QuizAnswer, QuizItem, QuizProgress } from '../types';
 import './QuizView.css';
 
 interface QuizViewProps {
   items: QuizItem[];
+  initialProgress?: QuizProgress | null;
+  onProgressChange?: (progress: QuizProgress | null) => void;
   onQuizComplete?: (score: number, total: number) => void;
 }
 
-const QuizView: React.FC<QuizViewProps> = ({ items, onQuizComplete }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [shortAnswer, setShortAnswer] = useState('');
-  const [showResult, setShowResult] = useState(false);
-  const [score, setScore] = useState(0);
-  const [quizComplete, setQuizComplete] = useState(false);
-  const [answers, setAnswers] = useState<{question: string, correct: boolean, userIcon: string}[]>([]);
+const emptyProgress: QuizProgress = {
+  currentIndex: 0,
+  selectedOption: null,
+  shortAnswer: '',
+  showResult: false,
+  score: 0,
+  quizComplete: false,
+  answers: [],
+};
+
+const clampProgress = (progress: QuizProgress | null | undefined, itemCount: number): QuizProgress => {
+  if (!progress || itemCount === 0) return emptyProgress;
+
+  return {
+    ...progress,
+    currentIndex: Math.min(Math.max(progress.currentIndex, 0), itemCount - 1),
+    answers: progress.answers.slice(0, itemCount),
+  };
+};
+
+const QuizView: React.FC<QuizViewProps> = ({ items, initialProgress, onProgressChange, onQuizComplete }) => {
+  const savedProgress = clampProgress(initialProgress, items.length);
+  const [currentIndex, setCurrentIndex] = useState(savedProgress.currentIndex);
+  const [selectedOption, setSelectedOption] = useState<string | null>(savedProgress.selectedOption);
+  const [shortAnswer, setShortAnswer] = useState(savedProgress.shortAnswer);
+  const [showResult, setShowResult] = useState(savedProgress.showResult);
+  const [score, setScore] = useState(savedProgress.score);
+  const [quizComplete, setQuizComplete] = useState(savedProgress.quizComplete);
+  const [answers, setAnswers] = useState<QuizAnswer[]>(savedProgress.answers);
+
+  const saveProgress = (progress: QuizProgress) => {
+    onProgressChange?.(progress);
+  };
 
   const handleNext = () => {
     if (currentIndex < items.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      const nextProgress = {
+        currentIndex: currentIndex + 1,
+        selectedOption: null,
+        shortAnswer: '',
+        showResult: false,
+        score,
+        quizComplete: false,
+        answers,
+      };
+
+      setCurrentIndex(nextProgress.currentIndex);
       setSelectedOption(null);
       setShortAnswer('');
       setShowResult(false);
+      saveProgress(nextProgress);
     } else {
       onQuizComplete?.(score, items.length);
+      saveProgress({
+        currentIndex,
+        selectedOption,
+        shortAnswer,
+        showResult,
+        score,
+        quizComplete: true,
+        answers,
+      });
       setQuizComplete(true);
     }
   };
 
   const handleSkip = () => {
     const currentItem = items[currentIndex];
-
-    setAnswers([...answers, {
+    const nextAnswers = [...answers, {
       question: currentItem.question,
       correct: false,
       userIcon: ''
-    }]);
+    }];
+
+    setAnswers(nextAnswers);
 
     if (currentIndex < items.length - 1) {
-      handleNext();
+      const nextProgress = {
+        currentIndex: currentIndex + 1,
+        selectedOption: null,
+        shortAnswer: '',
+        showResult: false,
+        score,
+        quizComplete: false,
+        answers: nextAnswers,
+      };
+
+      setCurrentIndex(nextProgress.currentIndex);
+      setSelectedOption(null);
+      setShortAnswer('');
+      setShowResult(false);
+      saveProgress(nextProgress);
     } else {
       onQuizComplete?.(score, items.length);
+      saveProgress({
+        currentIndex,
+        selectedOption: null,
+        shortAnswer: '',
+        showResult: false,
+        score,
+        quizComplete: true,
+        answers: nextAnswers,
+      });
       setQuizComplete(true);
     }
   };
@@ -52,15 +123,25 @@ const QuizView: React.FC<QuizViewProps> = ({ items, onQuizComplete }) => {
       ? selectedOption === currentItem.answer
       : shortAnswer.trim().toLowerCase() === currentItem.answer.toLowerCase();
 
-    if (isCorrect) setScore(score + 1);
-    
-    setAnswers([...answers, {
+    const nextScore = isCorrect ? score + 1 : score;
+    const nextAnswers = [...answers, {
       question: currentItem.question,
       correct: isCorrect,
       userIcon: currentItem.type === 'multiple-choice' ? selectedOption || '' : shortAnswer
-    }]);
+    }];
     
+    setScore(nextScore);
+    setAnswers(nextAnswers);
     setShowResult(true);
+    saveProgress({
+      currentIndex,
+      selectedOption,
+      shortAnswer,
+      showResult: true,
+      score: nextScore,
+      quizComplete: false,
+      answers: nextAnswers,
+    });
   };
 
   const restartQuiz = () => {
@@ -71,6 +152,7 @@ const QuizView: React.FC<QuizViewProps> = ({ items, onQuizComplete }) => {
     setScore(0);
     setQuizComplete(false);
     setAnswers([]);
+    onProgressChange?.(null);
   };
 
   if (items.length === 0) return <div>No quiz available.</div>;
@@ -96,6 +178,7 @@ const QuizView: React.FC<QuizViewProps> = ({ items, onQuizComplete }) => {
   }
 
   const currentItem = items[currentIndex];
+  const currentAnswer = answers[currentIndex];
 
   return (
     <div className="quiz-view">
@@ -146,9 +229,9 @@ const QuizView: React.FC<QuizViewProps> = ({ items, onQuizComplete }) => {
             )}
           </div>
 
-          {showResult && (
-            <div className={`result-feedback ${answers[currentIndex].correct ? 'correct' : 'incorrect'}`}>
-              {answers[currentIndex].correct ? (
+          {showResult && currentAnswer && (
+            <div className={`result-feedback ${currentAnswer.correct ? 'correct' : 'incorrect'}`}>
+              {currentAnswer.correct ? (
                 <><CheckCircle2 /> Correct!</>
               ) : (
                 <><XCircle /> Incorrect. The correct answer was: <strong>{currentItem.answer}</strong></>

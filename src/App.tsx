@@ -50,7 +50,7 @@ function App() {
   const HomePage = () => (
     <div className="page-content">
       <div className="hero-section">
-        <h1>Welcome to StudyBuddy</h1>
+        <h1>CHS BIO 9 STUDY</h1>
         <p>Your personalized study companion powered by your own documents.</p>
       </div>
 
@@ -106,7 +106,7 @@ function App() {
     <div className="app-container">
       <nav className="sidebar">
         <div className="sidebar-header">
-          <h2>StudyBuddy</h2>
+          <h2>CHS BIO 9 STUDY</h2>
         </div>
         <ul className="nav-links">
           <li>

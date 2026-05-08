@@ -23,12 +23,26 @@
     { "term": "Renal Artery", "definition": "Blood vessel carrying blood from aorta to kidney." }
   ],
   "flashcards": [
-    { "question": "Where does mechanical breakdown of food begin?", "answer": "The mouth (via teeth and tongue)." },
-    { "question": "What organ stores and delivers bile?", "answer": "Gallbladder." },
-    { "question": "What is the primary site of nutrient absorption?", "answer": "Small Intestine." },
-    { "question": "Which system filters nitrogenous wastes?", "answer": "Excretory System (Kidneys)." },
-    { "question": "What is the main function of the Large Intestine?", "answer": "Absorption of water and some nutrients; waste removal." },
-    { "question": "What separates the thoracic and abdominal cavities?", "answer": "Diaphragm." }
+    { "question": "What happens to tissues if homeostasis is not maintained?", "answer": "They can be damaged, leading to disease or death." },
+    { "question": "What is the key difference between negative and positive feedback?", "answer": "Negative feedback opposes the stimulus to return to a set point, while positive feedback enhances the stimulus to move away from it." },
+    { "question": "Name two examples of positive feedback loops.", "answer": "Contractions during labor and blood clotting." },
+    { "question": "Which directional term refers to the 'belly' side of the pig?", "answer": "Ventral." },
+    { "question": "Where is the urogenital papilla located on a female pig?", "answer": "Just ventral to the anus." },
+    { "question": "What is the function of the salivary amylase in the mouth?", "answer": "It begins the chemical digestion of carbohydrates." },
+    { "question": "How does the epiglottis protect the respiratory system?", "answer": "It folds down to prevent food from entering the trachea (windpipe) during swallowing." },
+    { "question": "What are the two sphincters of the stomach and their roles?", "answer": "Esophageal (prevents backflow) and Pyloric (controls movement to small intestine)." },
+    { "question": "Why is the small intestine covered in villi?", "answer": "To significantly increase surface area for nutrient absorption." },
+    { "question": "What does the liver do with excess glucose?", "answer": "It filters it from the blood and stores it as glycogen." },
+    { "question": "What is the role of bicarbonate produced by the pancreas?", "answer": "It acts as a buffer to neutralize strong stomach acid (HCL)." },
+    { "question": "Which organ filters nitrogenous wastes from the blood?", "answer": "The Kidneys." },
+    { "question": "Describe the path of urine from the kidney to the outside.", "answer": "Kidney -> Ureter -> Bladder -> Urethra." },
+    { "question": "What are the primary functions of the ovaries and testes?", "answer": "They are sites of meiosis, producing sex cells (gametes) and sex hormones." },
+    { "question": "Where does fertilization usually take place in the female?", "answer": "The Fallopian Tube (oviduct)." },
+    { "question": "Why do arteries have thicker walls than veins?", "answer": "To withstand the high pressure of blood being pumped directly from the heart." },
+    { "question": "What is the only place where materials are exchanged between blood and cells?", "answer": "Capillaries." },
+    { "question": "Which heart chamber pumps blood into the aorta?", "answer": "The Left Ventricle." },
+    { "question": "What is the only artery that carries deoxygenated blood?", "answer": "The Pulmonary Artery (carries blood to the lungs)." },
+    { "question": "How does the diaphragm facilitate breathing?", "answer": "It contracts and flattens to inhale air, then relaxes to push air out." }
   ],
   "quizzes": [
     { "type": "multiple-choice", "question": "What happens if homeostasis is not maintained?", "options": ["Tissue damage", "Disease", "Death", "All of the above"], "answer": "All of the above" },

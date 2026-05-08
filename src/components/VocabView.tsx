@@ -11,7 +11,7 @@ const VocabView: React.FC<VocabViewProps> = ({ items, title }) => {
   return (
     <div className="vocab-view">
       <header className="view-header">
-        <h1>Vocabulary: {title}</h1>
+        <h1>Vocabulary</h1>
         <p>{items.length} terms to master</p>
       </header>
       <div className="vocab-grid">

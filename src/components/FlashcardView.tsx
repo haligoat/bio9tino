@@ -33,7 +33,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ items, title }) => {
   return (
     <div className="flashcard-view">
       <header className="view-header">
-        <h1>Flashcards: {title}</h1>
+        <h1>Flashcards</h1>
         <p>Card {currentIndex + 1} of {items.length}</p>
       </header>
 

@@ -86,7 +86,7 @@ const QuizView: React.FC<QuizViewProps> = ({ items, title }) => {
   return (
     <div className="quiz-view">
       <header className="view-header">
-        <h1>Quiz: {title}</h1>
+        <h1>Quiz</h1>
         <div className="progress-bar">
           <div 
             className="progress-fill" 

@@ -158,9 +158,8 @@ body {
   transform: translateY(-8px);
 }
 
-.feature-card:nth-child(1) { grid-column: span 12; }
-.feature-card:nth-child(2) { grid-column: span 12; }
-.feature-card:nth-child(3) { grid-column: span 12; }
+.feature-card:nth-child(1) { grid-column: span 6; }
+.feature-card:nth-child(2) { grid-column: span 6; }
 
 .feature-card h3 {
   font-size: 1.75rem;

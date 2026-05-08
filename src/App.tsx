@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { BookOpen, Layers, ClipboardList, Home, FileText } from 'lucide-react';
+import { BookOpen, ClipboardList, Home, FileText } from 'lucide-react';
 import VocabView from './components/VocabView';
-import FlashcardView from './components/FlashcardView';
 import QuizView from './components/QuizView';
 import type { StudyData } from './types';
 import './App.css';
@@ -85,12 +84,6 @@ function App() {
           <Link to="/vocab" className="btn-secondary">Explore</Link>
         </div>
         <div className="feature-card">
-          <Layers size={32} />
-          <h3>Flashcards</h3>
-          <p>Test your memory with interactive 3D flipping cards.</p>
-          <Link to="/flashcards" className="btn-secondary">Practice</Link>
-        </div>
-        <div className="feature-card">
           <ClipboardList size={32} />
           <h3>Quizzes</h3>
           <p>Challenge yourself with comprehensive 60-question quizzes.</p>
@@ -120,11 +113,6 @@ function App() {
             </Link>
           </li>
           <li>
-            <Link to="/flashcards" className={location.pathname === '/flashcards' ? 'active' : ''}>
-              <Layers size={20} /> <span>Flashcards</span>
-            </Link>
-          </li>
-          <li>
             <Link to="/quizzes" className={location.pathname === '/quizzes' ? 'active' : ''}>
               <ClipboardList size={20} /> <span>Quizzes</span>
             </Link>
@@ -144,9 +132,6 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/vocab" element={
             currentMaterial ? <VocabView items={currentMaterial.vocab} /> : <HomePage />
-          } />
-          <Route path="/flashcards" element={
-            currentMaterial ? <FlashcardView items={currentMaterial.flashcards} /> : <HomePage />
           } />
           <Route path="/quizzes" element={
             currentMaterial ? <QuizView items={currentMaterial.quizzes} /> : <HomePage />

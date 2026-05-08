@@ -12,6 +12,8 @@ function App() {
   const [currentMaterial, setCurrentMaterial] = useState<StudyData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [allMaterials, setAllMaterials] = useState<StudyData | null>(null);
+
   // In a real static site, we'd fetch an index.json or use Vite's glob import
   useEffect(() => {
     const loadMaterials = async () => {
@@ -22,10 +24,26 @@ function App() {
         const paths = keys.map(path => path.split('/').pop()?.replace('.json', '') || '');
         setAvailableMaterials(paths);
         
-        // Load the first one by default if none selected
-        if (keys.length > 0 && !currentMaterial) {
-          const firstModule = await modules[keys[0]]() as { default: StudyData };
-          setCurrentMaterial(firstModule.default);
+        // Load all materials for the "All" view
+        const loadedData: StudyData[] = await Promise.all(
+          keys.map(async (key) => {
+            const module = await modules[key]() as { default: StudyData };
+            return module.default;
+          })
+        );
+
+        if (loadedData.length > 0) {
+          const aggregated: StudyData = {
+            title: 'All Materials',
+            vocab: loadedData.flatMap(d => d.vocab),
+            quizzes: loadedData.flatMap(d => d.quizzes),
+          };
+          setAllMaterials(aggregated);
+          
+          // Load the first one by default if none selected
+          if (!currentMaterial) {
+            setCurrentMaterial(loadedData[0]);
+          }
         }
       } catch (err) {
         console.error("Failed to load materials:", err);
@@ -38,6 +56,10 @@ function App() {
   }, []);
 
   const selectMaterial = async (name: string) => {
+    if (name === 'All Materials') {
+      setCurrentMaterial(allMaterials);
+      return;
+    }
     const modules = import.meta.glob('./data/*.json');
     const key = Object.keys(modules).find(k => k.includes(name));
     if (key) {
@@ -62,10 +84,17 @@ function App() {
           </div>
         ) : (
           <div className="materials-grid">
+            <div 
+              className={`material-card ${currentMaterial?.title === 'All Materials' ? 'active' : ''}`}
+              onClick={() => selectMaterial('All Materials')}
+            >
+              <FileText size={24} />
+              <span>All Materials</span>
+            </div>
             {availableMaterials.map((name) => (
               <div 
                 key={name} 
-                className={`material-card ${currentMaterial?.title.toLowerCase().includes(name.toLowerCase()) ? 'active' : ''}`}
+                className={`material-card ${currentMaterial?.title.toLowerCase().includes(name.toLowerCase()) && currentMaterial?.title !== 'All Materials' ? 'active' : ''}`}
                 onClick={() => selectMaterial(name)}
               >
                 <FileText size={24} />

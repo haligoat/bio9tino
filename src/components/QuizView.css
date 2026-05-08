@@ -17,7 +17,6 @@
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--tertiary-color));
-  box-shadow: 0 0 16px rgba(34, 211, 238, 0.5);
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -26,11 +25,7 @@
 }
 
 .question-card {
-  background:
-    linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(244, 114, 182, 0.055) 1px, transparent 1px),
-    var(--card-bg);
-  background-size: 44px 44px, 44px 44px, auto;
+  background: var(--card-bg);
   padding: 2.5rem;
   border-radius: 8px;
   border: 1px solid var(--border-color);
@@ -78,14 +73,14 @@
   border-color: var(--border-strong);
   color: var(--text-main);
   background: var(--nav-hover);
-  box-shadow: inset 3px 0 0 var(--primary-color), var(--glow-cyan);
+  box-shadow: inset 3px 0 0 var(--primary-color);
 }
 
 .option-btn.selected {
   border-color: rgba(103, 232, 249, 0.58);
   background: var(--active-bg);
   color: var(--active-text);
-  box-shadow: var(--glow-cyan);
+  box-shadow: inset 3px 0 0 var(--secondary-color);
 }
 
 .option-btn.correct {
@@ -115,7 +110,7 @@
 
 .short-answer-input input:focus {
   border-color: var(--primary-color);
-  box-shadow: var(--glow-cyan);
+  box-shadow: inset 0 -2px 0 var(--primary-color);
 }
 
 .result-feedback {
@@ -157,10 +152,10 @@
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, var(--primary-color), var(--tertiary-color));
-  color: #020617;
-  border: 1px solid rgba(163, 230, 53, 0.34);
-  box-shadow: var(--glow-cyan);
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--tertiary-color);
+  box-shadow: inset 0 -2px 0 var(--tertiary-color);
 }
 
 .submit-btn:disabled {
@@ -172,18 +167,16 @@
   background: var(--active-bg);
   color: var(--active-text);
   border: 1px solid rgba(103, 232, 249, 0.45);
-  box-shadow: var(--glow-cyan);
+  box-shadow: inset 0 -2px 0 var(--primary-color);
 }
 
 .result-card {
   text-align: center;
-  background:
-    repeating-linear-gradient(135deg, rgba(34, 211, 238, 0.075) 0 1px, transparent 1px 16px),
-    var(--card-bg);
+  background: var(--card-bg);
   padding: 4rem 2rem;
   border-radius: 8px;
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow), var(--glow-cyan);
+  box-shadow: var(--shadow);
 }
 
 .score-display {
@@ -195,7 +188,6 @@
   font-weight: 900;
   color: var(--text-main);
   line-height: 1;
-  text-shadow: 0 0 24px rgba(34, 211, 238, 0.42), 0 0 34px rgba(244, 114, 182, 0.2);
 }
 
 .score-total {
@@ -214,7 +206,7 @@
   background: var(--active-bg);
   color: var(--active-text);
   border: 1px solid rgba(103, 232, 249, 0.45);
-  box-shadow: var(--glow-cyan);
+  box-shadow: inset 0 -2px 0 var(--primary-color);
 }
 
 @media (max-width: 768px) {

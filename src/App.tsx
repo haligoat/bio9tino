@@ -89,7 +89,7 @@ function App() {
         <div className="feature-card">
           <ClipboardList size={32} />
           <h3>Quizzes</h3>
-          <p>Challenge yourself with multiple-choice and short-answer questions.</p>
+          <p>Challenge yourself with comprehensive 60-question quizzes.</p>
           <Link to="/quizzes" className="btn-secondary">Take Quiz</Link>
         </div>
       </section>

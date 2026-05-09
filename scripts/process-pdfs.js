@@ -44,8 +44,8 @@ async function processPdf(fileName) {
     }
     Requirements:
     - Extract ALL key terms and definitions.
-    - Create at least 20-30 quiz questions based on the content.
-    - Mix multiple-choice and short-answer questions.
+    - Create exactly 60 quiz questions based on the content.
+    - Balance multiple-choice and short-answer questions so the app can split them into three comparable 20-question quizzes.
     - Ensure all information is accurate to the text.
     - JSON must be valid.
 

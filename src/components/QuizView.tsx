@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { CheckCircle2, XCircle, ChevronRight, RefreshCw, SkipForward } from 'lucide-react';
-import type { QuizAnswer, QuizItem, QuizProgress } from '../types';
+import { CheckCircle2, XCircle, ChevronRight, RefreshCw, SkipForward, ClipboardCheck } from 'lucide-react';
+import type { QuizAnswer, QuizItem, QuizProgress, QuizSet } from '../types';
 import './QuizView.css';
 
 interface QuizViewProps {
-  items: QuizItem[];
+  items?: QuizItem[];
+  quizSets?: QuizSet[];
+  selectedQuizId?: string;
+  onQuizSelect?: (quizId: string) => void;
   initialProgress?: QuizProgress | null;
   onProgressChange?: (progress: QuizProgress | null) => void;
   onQuizComplete?: (score: number, total: number) => void;
@@ -30,7 +33,25 @@ const clampProgress = (progress: QuizProgress | null | undefined, itemCount: num
   };
 };
 
-const QuizView: React.FC<QuizViewProps> = ({ items, initialProgress, onProgressChange, onQuizComplete }) => {
+const createFallbackQuizSet = (items: QuizItem[]): QuizSet => ({
+  id: 'quiz-1',
+  title: 'Quiz',
+  description: 'Unit practice',
+  items,
+});
+
+const QuizView: React.FC<QuizViewProps> = ({
+  items: fallbackItems = [],
+  quizSets,
+  selectedQuizId,
+  onQuizSelect,
+  initialProgress,
+  onProgressChange,
+  onQuizComplete,
+}) => {
+  const availableQuizSets = quizSets?.length ? quizSets : [createFallbackQuizSet(fallbackItems)];
+  const activeQuizSet = availableQuizSets.find((quizSet) => quizSet.id === selectedQuizId) ?? availableQuizSets[0];
+  const items = activeQuizSet.items;
   const savedProgress = clampProgress(initialProgress, items.length);
   const [currentIndex, setCurrentIndex] = useState(savedProgress.currentIndex);
   const [selectedOption, setSelectedOption] = useState<string | null>(savedProgress.selectedOption);
@@ -155,13 +176,45 @@ const QuizView: React.FC<QuizViewProps> = ({ items, initialProgress, onProgressC
     onProgressChange?.(null);
   };
 
+  const renderQuizPicker = () => {
+    if (availableQuizSets.length <= 1) return null;
+
+    return (
+      <section className="quiz-picker" aria-label="Choose a quiz">
+        {availableQuizSets.map((quizSet) => {
+          const isActive = quizSet.id === activeQuizSet.id;
+
+          return (
+            <button
+              key={quizSet.id}
+              type="button"
+              className={`quiz-choice ${isActive ? 'active' : ''}`}
+              aria-pressed={isActive}
+              onClick={() => onQuizSelect?.(quizSet.id)}
+            >
+              <span className="quiz-choice-icon">
+                <ClipboardCheck size={22} />
+              </span>
+              <span className="quiz-choice-copy">
+                <span className="quiz-choice-title">{quizSet.title}</span>
+                <span className="quiz-choice-detail">{quizSet.items.length} questions</span>
+              </span>
+              <span className="quiz-choice-badge">Same difficulty</span>
+            </button>
+          );
+        })}
+      </section>
+    );
+  };
+
   if (items.length === 0) return <div>No quiz available.</div>;
 
   if (quizComplete) {
     return (
       <div className="quiz-view result-page">
+        {renderQuizPicker()}
         <div className="result-card">
-          <h1>Quiz Complete!</h1>
+          <h1>{activeQuizSet.title} Complete!</h1>
           <div className="score-display">
             <span className="score-num">{score}</span>
             <span className="score-total">/ {items.length}</span>
@@ -172,6 +225,15 @@ const QuizView: React.FC<QuizViewProps> = ({ items, initialProgress, onProgressC
           <button onClick={restartQuiz} className="restart-btn">
             <RefreshCw size={20} /> Restart Quiz
           </button>
+          <div className="answer-review" aria-label="Answer review">
+            {answers.map((answer, index) => (
+              <div key={`${answer.question}-${index}`} className={`answer-review-row ${answer.correct ? 'correct' : 'incorrect'}`}>
+                <span>{index + 1}</span>
+                <p>{answer.question}</p>
+                {answer.correct ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -184,7 +246,10 @@ const QuizView: React.FC<QuizViewProps> = ({ items, initialProgress, onProgressC
   return (
     <div className="quiz-view">
       <header className="view-header">
-        <h1>Quiz</h1>
+        <div className="quiz-kicker">Choose a Form</div>
+        <h1>{activeQuizSet.title}</h1>
+        <p>{activeQuizSet.description}</p>
+        {renderQuizPicker()}
         <div className="quiz-progress-meta">
           <span>Question {currentIndex + 1} of {items.length}</span>
           <span>{progressPercent}%</span>

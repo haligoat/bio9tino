@@ -8,6 +8,14 @@ export interface QuizItem {
   question: string;
   options?: string[];
   answer: string;
+  unitTitle?: string;
+}
+
+export interface QuizSet {
+  id: string;
+  title: string;
+  description: string;
+  items: QuizItem[];
 }
 
 export interface QuizAnswer {

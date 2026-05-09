@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { BookOpen, ClipboardList, Home, FileText, PanelsTopLeft } from 'lucide-react';
 import VocabView from './components/VocabView';
 import QuizView from './components/QuizView';
 import FlashcardsView from './components/FlashcardsView';
 import type { QuizProgress, StudyData } from './types';
+import { buildBalancedQuizSets, getDefaultQuizSetId } from './utils/quizSets';
 import './App.css';
 
 interface GoogleCredentialResponse {
@@ -59,9 +60,11 @@ const defaultStatus: UserStatus = {
 };
 
 const defaultGoogleClientId = '450297337959-kksvlman4li817h039dd9rpt8igpa29s.apps.googleusercontent.com';
+const allMaterialsTitle = 'All Materials';
 const userStorageKey = 'bio9-google-user';
 const statusStorageKey = (userId: string) => `bio9-status-${userId}`;
-const quizProgressStorageKey = (userId: string, materialTitle: string) => `bio9-quiz-progress-${userId}-${materialTitle}`;
+const quizProgressStorageKey = (userId: string, materialTitle: string, quizId: string) =>
+  `bio9-quiz-progress-v2-${userId}-${materialTitle}-${quizId}`;
 
 const formatStudyGuideName = (name: string) =>
   name
@@ -78,8 +81,8 @@ const getSavedStatus = (userId: string) => {
   return savedStatus ? JSON.parse(savedStatus) as UserStatus : defaultStatus;
 };
 
-const getSavedQuizProgress = (userId: string, materialTitle: string) => {
-  const savedProgress = localStorage.getItem(quizProgressStorageKey(userId, materialTitle));
+const getSavedQuizProgress = (userId: string, materialTitle: string, quizId: string) => {
+  const savedProgress = localStorage.getItem(quizProgressStorageKey(userId, materialTitle, quizId));
   return savedProgress ? JSON.parse(savedProgress) as QuizProgress : null;
 };
 
@@ -103,7 +106,20 @@ function App() {
   });
 
   const [allMaterials, setAllMaterials] = useState<StudyData | null>(null);
+  const [selectedQuizId, setSelectedQuizId] = useState('quiz-1');
   const googleClientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) || defaultGoogleClientId;
+  const currentQuizSets = useMemo(
+    () => currentMaterial ? buildBalancedQuizSets(currentMaterial.quizzes, {
+      targetQuestionCount: currentMaterial.title === allMaterialsTitle ? 100 : 60,
+      description: currentMaterial.title === allMaterialsTitle
+        ? '100-question all-topics review'
+        : '60-question full-unit practice',
+    }) : [],
+    [currentMaterial]
+  );
+  const activeQuizId = currentQuizSets.some((quizSet) => quizSet.id === selectedQuizId)
+    ? selectedQuizId
+    : getDefaultQuizSetId(currentQuizSets);
 
   const saveUserStatus = (updates: Partial<UserStatus>) => {
     if (!currentUser) return;
@@ -153,10 +169,10 @@ function App() {
     });
   };
 
-  const handleQuizProgressChange = (progress: QuizProgress | null) => {
+  const handleQuizProgressChange = (quizId: string, progress: QuizProgress | null) => {
     if (!currentUser || !currentMaterial) return;
 
-    const storageKey = quizProgressStorageKey(currentUser.sub, currentMaterial.title);
+    const storageKey = quizProgressStorageKey(currentUser.sub, currentMaterial.title, quizId);
     if (progress) {
       localStorage.setItem(storageKey, JSON.stringify(progress));
     } else {
@@ -164,9 +180,9 @@ function App() {
     }
   };
 
-  const getCurrentQuizProgress = () => {
+  const getCurrentQuizProgress = (quizId: string) => {
     if (!currentUser || !currentMaterial) return null;
-    return getSavedQuizProgress(currentUser.sub, currentMaterial.title);
+    return getSavedQuizProgress(currentUser.sub, currentMaterial.title, quizId);
   };
 
   useEffect(() => {
@@ -233,9 +249,14 @@ function App() {
 
         if (loadedData.length > 0) {
           const aggregated: StudyData = {
-            title: 'All Materials',
+            title: allMaterialsTitle,
             vocab: loadedData.flatMap(d => d.vocab),
-            quizzes: loadedData.flatMap(d => d.quizzes),
+            quizzes: loadedData.flatMap(d =>
+              d.quizzes.map(quiz => ({
+                ...quiz,
+                unitTitle: d.title,
+              }))
+            ),
           };
           setAllMaterials(aggregated);
           
@@ -253,7 +274,7 @@ function App() {
   }, []);
 
   const selectMaterial = async (name: string) => {
-    if (name === 'All Materials') {
+    if (name === allMaterialsTitle) {
       setCurrentMaterial(allMaterials);
       if (allMaterials) saveUserStatus({ lastMaterialTitle: allMaterials.title });
       return;
@@ -284,16 +305,16 @@ function App() {
         ) : (
           <div className="materials-grid">
             <div 
-              className={`material-card ${currentMaterial?.title === 'All Materials' ? 'active' : ''}`}
-              onClick={() => selectMaterial('All Materials')}
+              className={`material-card ${currentMaterial?.title === allMaterialsTitle ? 'active' : ''}`}
+              onClick={() => selectMaterial(allMaterialsTitle)}
             >
               <FileText size={24} />
-              <span>All Materials</span>
+              <span>{allMaterialsTitle}</span>
             </div>
             {availableMaterials.map((name) => (
               <div 
                 key={name} 
-                className={`material-card ${currentMaterial?.title.toLowerCase().includes(name.toLowerCase()) && currentMaterial?.title !== 'All Materials' ? 'active' : ''}`}
+                className={`material-card ${currentMaterial?.title.toLowerCase().includes(name.toLowerCase()) && currentMaterial?.title !== allMaterialsTitle ? 'active' : ''}`}
                 onClick={() => selectMaterial(name)}
               >
                 <FileText size={24} />
@@ -314,7 +335,7 @@ function App() {
         <div className="feature-card">
           <ClipboardList size={32} />
           <h3>Quizzes</h3>
-          <p>Challenge yourself with comprehensive 60-question quizzes.</p>
+          <p>Pick from three 60-question unit quizzes or 100-question all-topic reviews.</p>
           <Link to="/quizzes" className="btn-secondary">Take Quiz</Link>
         </div>
         <div className="feature-card">
@@ -411,10 +432,12 @@ function App() {
           <Route path="/quizzes" element={
             currentMaterial ? (
               <QuizView
-                key={`${currentUser?.sub ?? 'guest'}-${currentMaterial.title}`}
-                items={currentMaterial.quizzes}
-                initialProgress={getCurrentQuizProgress()}
-                onProgressChange={handleQuizProgressChange}
+                key={`${currentUser?.sub ?? 'guest'}-${currentMaterial.title}-${activeQuizId}`}
+                quizSets={currentQuizSets}
+                selectedQuizId={activeQuizId}
+                onQuizSelect={setSelectedQuizId}
+                initialProgress={getCurrentQuizProgress(activeQuizId)}
+                onProgressChange={(progress) => handleQuizProgressChange(activeQuizId, progress)}
                 onQuizComplete={handleQuizComplete}
               />
             ) : renderHomePage()
